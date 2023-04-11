@@ -1,18 +1,37 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import axios from "axios";
+
+export const fetchPost = createAsyncThunk("posts/fetchPost",
+   async () => {
+    const res = await axios.get('https://randomuser.me/api/?results=50');
+    return res.data;
+});
 
 const initialState = {
   users:[],
-  isLoading:true,
+  isLoading:false,
   error: null,
 };
 
 export const userSlice = createSlice({
-  name: 'users',
+  name: 'posts',
   initialState,
-  reducers:{
-    extraReducer:{},
-  },
+    extraReducers: (builder) =>{
+      builder.addCase(fetchPost.pending, (state) => {
+        state.isLoading = true;
+      });
+      builder.addCase(fetchPost.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.posts = action.payload;
+        state.error = null;
+      });
+      builder.addCase(fetchPost.rejected, (state, action) => {
+        state.isLoading = false;
+        state.posts = [];
+        state.error = action.error.message;
+      });
+    },
+
 });
 
-export const { extraReducer } = userSlice.actions;
 export default userSlice.reducer;
