@@ -1,8 +1,9 @@
+import UsersView from "./components/UsersView";
 
 function App() {
   return (
     <div>
-Hello world
+      <UsersView />
     </div>
   );
 }
